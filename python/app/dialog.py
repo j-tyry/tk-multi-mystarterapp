@@ -28,7 +28,7 @@ def show_dialog(app_instance):
     
     # we pass the dialog class to this method and leave the actual construction
     # to be carried out by toolkit.
-    app_instance.engine.show_dialog("Starter Template App...", app_instance, AppDialog)
+    app_instance.engine.show_dialog("My starter's application", app_instance, AppDialog)
     
 
 
@@ -51,13 +51,28 @@ class AppDialog(QtGui.QWidget):
         # most of the useful accessors are available through the Application class instance
         # it is often handy to keep a reference to this. You can get it via the following method:
         self._app = sgtk.platform.current_bundle()
-        
+        self._eng = sgtk.platform.current_engine()
+
         # via the self._app handle we can for example access:
         # - The engine, via self._app.engine
         # - A Shotgun API instance, via self._app.shotgun
         # - A tk API instance, via self._app.tk 
         
         # lastly, set up our very basic UI
-        self.ui.context.setText("Current Context: %s" % self._app.context)
-        
-        
+        var_context = self.ui.context.text()
+        self.ui.context.setText(var_context + " %s" % self._app.context)
+        self.ui.engine.setText("%s" % self._app)
+        apps_ls = []
+        for i in self._eng.apps:
+            apps_ls.append(i)
+        self.ui.apps.setText("Current loaded apps : %s" % apps_ls)
+        self.ui.pushBut.clicked.connect(self._on_click)
+
+    def _on_click(self):
+        pbar_val = self.ui.progressBar.value()
+        print("button's clicked %s" % pbar_val)
+        if pbar_val < 100 :
+            pbar_val = (pbar_val + 5)
+        else :
+            pbar_val = 0
+        self.ui.progressBar.setValue(pbar_val)
